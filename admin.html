@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel - Learn & Earn</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #0f172a; color: #fff; padding: 20px; }
+    .card { background: #1e293b; padding: 20px; border-radius: 10px; max-width: 700px; margin: 15px auto; border: 1px solid #334155; }
+    input, textarea { width: 95%; padding: 10px; margin: 8px 0; border-radius: 5px; border: 1px solid #475569; background: #0f172a; color: #fff; }
+    button { padding: 10px 20px; background: #2563eb; color: #fff; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; margin-top: 10px; }
+    .approve-btn { background: #22c55e; margin-right: 5px; }
+    .reject-btn { background: #ef4444; }
+    .req-item { background: #334155; padding: 12px; margin: 10px 0; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; }
+  </style>
+</head>
+<body>
+
+  <h2 style="text-align: center;">⚙️ Admin Control Panel</h2>
+
+  <div class="card">
+    <h3>➕ Add New Task & Questions</h3>
+    <input type="text" id="taskId" placeholder="Task ID (e.g., task1, task2)">
+    <input type="text" id="taskTitle" placeholder="Task Title (e.g., Daily Quiz 1)">
+    <input type="text" id="videoId" placeholder="YouTube Video ID (e.g., M7lc1UVf-VE)">
+    <input type="number" id="rewardCoins" placeholder="Reward Coins (e.g., 10)">
+    
+    <h4>Questions (JSON Format)</h4>
+    <textarea id="questionsJson" rows="10" placeholder='[
+  {
+    "q": "Question 1?",
+    "options": ["Option A", "Option B", "Option C", "Option D"],
+    "ans": 0
+  }
+]'></textarea>
+    <button onclick="addNewTask()">Publish Task</button>
+  </div>
+
+  <div class="card">
+    <h3>💸 Pending Withdrawal Requests</h3>
+    <div id="requestsList">Loading...</div>
+  </div>
+
+  <script>
+    const SUPABASE_URL = "https://zerthuoblnivjhhjepd.supabase.co";
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InplcnRodHVvYmxuaXZqaGhqZXBkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg1MDI0ODIsImV4cCI6MjEwNDA3ODQ4Mn0.9NTTuvCBl7vgkAa9ETHqcqjd_f4sc9fD1sUBb7fk7po";
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    async function addNewTask() {
+      const taskId = document.getElementById("taskId").value;
+      const title = document.getElementById("taskTitle").value;
+      const videoId = document.getElementById("videoId").value;
+      const rewardCoins = document.getElementById("rewardCoins").value;
+      const questionsStr = document.getElementById("questionsJson").value;
+
+      try {
+        const questions = JSON.parse(questionsStr);
+        const { error } = await supabase.from('tasks').insert([{
+          task_id: taskId,
+          title: title,
+          video_id: videoId,
+          reward_coins: parseInt(rewardCoins),
+          questions: questions
+        }]);
+
+        if (error) throw error;
+        alert("✅ Task added successfully!");
+      } catch (err) {
+        alert("Error: Check your JSON format or duplicate Task ID! " + err.message);
+      }
+    }
+
+    async function loadRequests() {
+      const { data } = await supabase.from('withdrawals').select('*').eq('status', 'PENDING');
+      const listDiv = document.getElementById("requestsList");
+      listDiv.innerHTML = "";
+
+      if (!data || data.length === 0) {
+        listDiv.innerHTML = "<p>No pending requests.</p>";
+        return;
+      }
+
+      data.forEach(req => {
+        listDiv.innerHTML += `
+          <div class="req-item">
+            <div>
+              <strong>${req.user_email}</strong><br>
+              UPI: ${req.upi_id} | Coins: ${req.amount}
+            </div>
+            <div>
+              <button class="approve-btn" onclick="updateRequest('${req.id}', 'APPROVED')">Approve</button>
+              <button class="reject-btn" onclick="updateRequest('${req.id}', 'REJECTED')">Reject</button>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    async function updateRequest(id, status) {
+      await supabase.from('withdrawals').update({ status: status }).eq('id', id);
+      alert(`Request ${status}!`);
+      loadRequests();
+    }
+
+    loadRequests();
+  </script>
+</body>
+</html>
