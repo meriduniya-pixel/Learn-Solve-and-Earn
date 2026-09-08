@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Complete Task & Earn</title>
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #0f172a; color: #f8fafc; margin: 0; padding: 15px; }
+    .container { max-width: 650px; margin: auto; }
+    .card { background-color: #1e293b; border-radius: 12px; padding: 20px; margin-bottom: 20px; border: 1px solid #334155; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.3); }
+    
+    /* Responsive Video Wrapper (16:9 Aspect Ratio) */
+    .video-responsive {
+      position: relative;
+      padding-bottom: 56.25%;
+      height: 0;
+      overflow: hidden;
+      border-radius: 10px;
+      border: 1px solid #334155;
+      background-color: #000;
+    }
+    .video-responsive iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+
+    .timer-badge { background-color: #0284c7; color: #fff; padding: 8px 16px; border-radius: 20px; font-weight: bold; display: inline-block; margin-top: 15px; }
+    .q-box { background: #0f172a; padding: 15px; border-radius: 8px; margin-top: 15px; border-left: 4px solid #38bdf8; }
+    .option-label { display: block; padding: 10px; margin: 6px 0; background-color: #1e293b; border: 1px solid #334155; border-radius: 6px; cursor: pointer; transition: 0.2s; }
+    .option-label:hover { background-color: #334155; }
+    button { width: 100%; padding: 12px; background-color: #2563eb; color: #fff; font-weight: bold; border: none; border-radius: 6px; margin-top: 20px; cursor: pointer; }
+    button:disabled { background-color: #475569; cursor: not-allowed; }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="card">
+      <h2 style="margin-top:0; color:#38bdf8;">📺 Watch Video & Earn</h2>
+      
+      <!-- Responsive Player -->
+      <div class="video-responsive">
+        <iframe id="youtubePlayer" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      </div>
+
+      <div style="text-align: center;">
+        <div class="timer-badge" id="timerDisplay">Timer: Loading...</div>
+      </div>
+    </div>
+
+    <!-- Questions Section -->
+    <div class="card" id="quizCard" style="display: none;">
+      <h3 style="margin-top:0; color:#38bdf8;">📝 Answer Questions</h3>
+      <form id="quizForm">
+        <div id="questionsContainer"></div>
+        <button type="button" id="submitBtn" onclick="submitQuiz()">Submit Quiz</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Firebase Scripts -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, get, update, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyB13vZKTOcxKmkLC9j2RrrY_LQFr254Njk",
+      authDomain: "vidquiz-plateform.firebaseapp.com",
+      projectId: "vidquiz-plateform",
+      storageBucket: "vidquiz-plateform.firebasestorage.app",
+      messagingSenderId: "296367717015",
+      appId: "1:296367717015:web:b31e8b3f3a03218d78c7d2",
+      databaseURL: "https://vidquiz-plateform-default-rtdb.firebaseio.com"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+
+    // Get Task ID & User ID from URL (e.g. task.html?taskId=-Nxxxx&userId=USER123)
+    const urlParams = new URLSearchParams(window.location.search);
+    const taskId = urlParams.get('taskId');
+    const userId = urlParams.get('userId') || "guest_user"; 
+
+    let currentTask = null;
+    let timerSeconds = 0;
+    let timerInterval = null;
+
+    // Fetch Task Data
+    if (taskId) {
+      get(ref(database, 'tasks/' + taskId)).then((snapshot) => {
+        if (snapshot.exists()) {
+          currentTask = snapshot.val();
+          loadVideo(currentTask.videoId);
+          startTimer(currentTask.timerSeconds);
+        } else {
+          document.body.innerHTML = "<h2 style='color:white; text-align:center;'>Task Not Found!</h2>";
+        }
+      });
+    } else {
+      document.body.innerHTML = "<h2 style='color:white; text-align:center;'>No Task Specified!</h2>";
+    }
+
+    // Extract YouTube ID clean function
+    function extractYouTubeId(url) {
+      const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+      const match = url.match(regExp);
+      return (match && match[2].length === 11) ? match[2] : url;
+    }
+
+    function loadVideo(rawId) {
+      const cleanId = extractYouTubeId(rawId);
+      document.getElementById("youtubePlayer").src = `https://www.youtube.com/embed/${cleanId}?enablejsapi=1`;
+    }
+
+    function startTimer(seconds) {
+      timerSeconds = seconds;
+      const display = document.getElementById("timerDisplay");
+      
+      timerInterval = setInterval(() => {
+        timerSeconds--;
+        display.innerText = `Please wait: ${timerSeconds}s`;
+
+        if (timerSeconds <= 0) {
+          clearInterval(timerInterval);
+          display.innerText = "✅ Video Watch Time Complete!";
+          display.style.backgroundColor = "#16a34a";
+          showQuiz();
+        }
+      }, 1000);
+    }
+
+    function showQuiz() {
+      if (!currentTask.questions || currentTask.questions.length === 0) {
+        alert("No quiz for this task. Reward added!");
+        grantReward();
+        return;
+      }
+
+      const container = document.getElementById("questionsContainer");
+      container.innerHTML = "";
+
+      currentTask.questions.forEach((qObj, index) => {
+        const qHTML = `
+          <div class="q-box">
+            <p style="font-weight:bold; margin-top:0;">Q${index + 1}: ${qObj.q}</p>
+            ${qObj.options.map((opt, i) => {
+              const optKey = String.fromCharCode(65 + i); // A, B, C, D
+              return `
+                <label class="option-label">
+                  <input type="radio" name="q_${index}" value="${optKey}">
+                  ${optKey}) ${opt}
+                </label>
+              `;
+            }).join('')}
+          </div>
+        `;
+        container.innerHTML += qHTML;
+      });
+
+      document.getElementById("quizCard").style.display = "block";
+    }
+
+    window.submitQuiz = function() {
+      let allCorrect = true;
+
+      currentTask.questions.forEach((qObj, index) => {
+        const selected = document.querySelector(`input[name="q_${index}"]:checked`);
+        if (!selected || selected.value !== qObj.ans) {
+          allCorrect = false;
+        }
+      });
+
+      if (allCorrect) {
+        alert("🎉 Correct Answers! Reward Credited.");
+        grantReward();
+      } else {
+        alert("❌ Incorrect answers. Please try again!");
+      }
+    };
+
+    function grantReward() {
+      // Add Coins to User Profile in Firebase
+      update(ref(database, 'users/' + userId), {
+        coins: increment(10) // 10 Coins Per Task
+      }).then(() => {
+        window.location.href = "index.html"; // Redirect back to Home
+      });
+    }
+  </script>
+</body>
+</html>
