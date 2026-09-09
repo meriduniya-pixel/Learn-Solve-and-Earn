@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel - Control Center</title>
+  <style>
+    body {
+      background-color: #0f172a;
+      color: #f8fafc;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
+    .admin-container {
+      display: none; /* Password verify hone tak panel hidden rahega */
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .card {
+      background-color: #1e293b;
+      border: 1px solid #334155;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    input, button, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 8px;
+      margin-bottom: 15px;
+      background-color: #0f172a;
+      border: 1px solid #334155;
+      color: white;
+      border-radius: 6px;
+      box-sizing: border-box;
+    }
+    button {
+      background-color: #2563eb;
+      font-weight: bold;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Hidden Admin Panel Container -->
+  <div id="adminPanel" class="admin-container">
+    <h2>🛠️ Admin Dashboard</h2>
+    
+    <div class="card">
+      <h3>➕ Add New Announcement / Blog</h3>
+      <input type="text" id="blogTitle" placeholder="Post Title">
+      <textarea id="blogContent" placeholder="Post Content Details..." rows="4"></textarea>
+      <button onclick="publishBlog()">Publish Post</button>
+    </div>
+
+    <div class="card">
+      <h3>🎬 Add New Task (Video Link)</h3>
+      <input type="text" id="videoUrl" placeholder="YouTube Video URL">
+      <input type="text" id="quizQuestion" placeholder="Quiz Question">
+      <input type="text" id="quizAnswer" placeholder="Correct Answer">
+      <button onclick="addTask()">Add Task</button>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+    // SECRET ADMIN PASSWORD
+    const ADMIN_SECRET = "SomSan708999"; // <-- Yahan apna secret password badal sakte hain
+
+    // Instant Password Security Check
+    const userPass = prompt("Enter Admin Password:");
+    if (userPass !== ADMIN_SECRET) {
+      alert("Unauthorized Access! Redirecting to home page...");
+      window.location.href = "index.html";
+    } else {
+      document.addEventListener("DOMContentLoaded", () => {
+        document.getElementById("adminPanel").style.display = "block";
+      });
+    }
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyB13vZKTOcxKmkLC9j2RrrY_LQFr254Njk",
+      authDomain: "vidquiz-plateform.firebaseapp.com",
+      projectId: "vidquiz-plateform",
+      storageBucket: "vidquiz-plateform.firebasestorage.app",
+      messagingSenderId: "296367717015",
+      appId: "1:296367717015:web:b31e8b3f3a03218d78c7d2",
+      databaseURL: "https://vidquiz-plateform-default-rtdb.firebaseio.com"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+
+    window.publishBlog = function() {
+      const title = document.getElementById("blogTitle").value;
+      const content = document.getElementById("blogContent").value;
+      if (!title || !content) return alert("Fill all fields");
+
+      const newRef = push(ref(database, 'blogs'));
+      set(newRef, { title, content, createdAt: new Date().toISOString() })
+        .then(() => alert("Blog published successfully!"));
+    };
+
+    window.addTask = function() {
+      const videoUrl = document.getElementById("videoUrl").value;
+      const question = document.getElementById("quizQuestion").value;
+      const answer = document.getElementById("quizAnswer").value;
+
+      const newRef = push(ref(database, 'tasks'));
+      set(newRef, { videoUrl, question, answer })
+        .then(() => alert("Task added successfully!"));
+    };
+  </script>
+</body>
+</html>
