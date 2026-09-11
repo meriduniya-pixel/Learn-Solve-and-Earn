@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Complete Task & Earn - Learn & Earn</title>
+  <style>
+    :root {
+      --bg-color: #0f172a;
+      --card-bg: #1e293b;
+      --border-color: #334155;
+      --accent-cyan: #38bdf8;
+      --accent-green: #22c55e;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body { 
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+      background-color: var(--bg-color); 
+      color: var(--text-main); 
+      margin: 0; 
+      padding: 12px; 
+    }
+
+    .container { 
+      max-width: 650px; 
+      margin: auto; 
+      width: 100%;
+    }
+
+    /* Top Live Balance Header */
+    .balance-header {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 12px 16px;
+      margin-bottom: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.3);
+    }
+
+    .user-info { 
+      font-size: 13px; 
+      color: var(--text-muted); 
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    
+    .coin-badge { 
+      background-color: rgba(56, 189, 248, 0.1); 
+      color: var(--accent-cyan); 
+      border: 1px solid var(--accent-cyan);
+      padding: 6px 14px; 
+      border-radius: 20px; 
+      font-weight: bold; 
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    /* Back Button */
+    .back-btn {
+      background-color: #334155;
+      color: #f8fafc;
+      padding: 8px 14px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 13px;
+      border: none;
+      cursor: pointer;
+      margin-bottom: 12px;
+      display: inline-block;
+      font-weight: 500;
+    }
+
+    /* Rate Notice Badge */
+    .rate-notice {
+      background-color: rgba(34, 197, 94, 0.1);
+      border: 1px dashed var(--accent-green);
+      color: #4ade80;
+      text-align: center;
+      padding: 8px;
+      border-radius: 8px;
+      font-size: 12px;
+      margin-bottom: 15px;
+      font-weight: bold;
+      line-height: 1.4;
+    }
+
+    /* Ad Banner Slot */
+    .ad-space {
+      border: 1px dashed var(--border-color);
+      border-radius: 8px;
+      padding: 10px;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 12px;
+      margin-bottom: 15px;
+      background-color: rgba(30, 41, 59, 0.4);
+      min-height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .card { 
+      background-color: var(--card-bg); 
+      border-radius: 12px; 
+      padding: 16px; 
+      margin-bottom: 15px; 
+      border: 1px solid var(--border-color); 
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.3); 
+    }
+    
+    /* Responsive Video Wrapper with Anti-Cheat Overlay */
+    .video-responsive {
+      position: relative;
+      padding-bottom: 56.25%;
+      height: 0;
+      overflow: hidden;
+      border-radius: 10px;
+      border: 1px solid var(--border-color);
+      background-color: #000;
+    }
+
+    .video-responsive iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+
+    /* Transparent Anti-Seek Overlay Barrier */
+    .anti-cheat-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 75%; /* Cover upper area to block seeking while allowing controls if needed */
+      z-index: 10;
+      pointer-events: none; /* Allows click through to player */
+    }
+
+    .timer-badge { 
+      background-color: #0284c7; 
+      color: #fff; 
+      padding: 10px 18px; 
+      border-radius: 20px; 
+      font-weight: bold; 
+      display: inline-block; 
+      margin-top: 15px; 
+      font-size: 14px;
+      transition: background-color 0.3s;
+    }
+
+    .q-box { 
+      background: var(--bg-color); 
+      padding: 12px; 
+      border-radius: 8px; 
+      margin-top: 12px; 
+      border-left: 4px solid var(--accent-cyan); 
+    }
+
+    .option-label { 
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px; 
+      margin: 6px 0; 
+      background-color: var(--card-bg); 
+      border: 1px solid var(--border-color); 
+      border-radius: 6px; 
+      cursor: pointer; 
+      font-size: 14px;
+      word-break: break-word;
+      transition: 0.2s; 
+    }
+
+    .option-label:hover { background-color: var(--border-color); }
+
+    button.quiz-btn { 
+      width: 100%; 
+      padding: 12px; 
+      background-color: #2563eb; 
+      color: #fff; 
+      font-weight: bold; 
+      border: none; 
+      border-radius: 6px; 
+      margin-top: 15px; 
+      cursor: pointer; 
+      font-size: 15px;
+    }
+
+    button:disabled { background-color: #475569; cursor: not-allowed; }
+
+    /* Security Warning Banner */
+    #cheatWarning {
+      display: none;
+      background-color: #ef4444;
+      color: white;
+      text-align: center;
+      padding: 8px;
+      border-radius: 6px;
+      font-size: 13px;
+      margin-bottom: 12px;
+      font-weight: bold;
+    }
+
+    /* Anti-AdBlock Modal Styling */
+    #adblock-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(15, 23, 42, 0.95);
+      z-index: 99999;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .adblock-modal {
+      background-color: var(--card-bg);
+      border: 2px solid #ef4444;
+      border-radius: 12px;
+      padding: 25px;
+      max-width: 450px;
+      text-align: center;
+      box-shadow: 0 10px 25px rgba(239, 68, 68, 0.2);
+    }
+
+    .adblock-modal h2 { color: #ef4444; margin-top: 0; font-size: 22px; }
+    .adblock-modal p { color: var(--text-main); font-size: 14px; margin-bottom: 20px; }
+    .btn-refresh { background-color: #ef4444; color: white; border: none; padding: 12px 24px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 15px; }
+
+    /* Mobile Responsive Optimizations */
+    @media (max-width: 480px) {
+      body { padding: 8px; }
+      .card { padding: 12px; }
+      .balance-header { padding: 10px 12px; }
+      .user-info { font-size: 12px; }
+      .coin-badge { font-size: 12px; padding: 5px 10px; }
+      .timer-badge { font-size: 13px; padding: 8px 14px; }
+      h2 { font-size: 1.2rem; }
+      h3 { font-size: 1rem; }
+    }
+  </style>
+  <!-- Load YouTube IFrame Player API -->
+  <script src="https://www.youtube.com/iframe_api"></script>
+</head>
+<body>
+
+  <!-- Anti-AdBlock Warning Modal -->
+  <div id="adblock-overlay">
+    <div class="adblock-modal">
+      <h2>🛡️ AdBlocker Detected!</h2>
+      <p>Aapke browser mein AdBlocker enabled hai. Task complete karne aur coins earn karne ke liye please AdBlocker ko Disable karein aur page Refresh karein.</p>
+      <button class="btn-refresh" onclick="window.location.reload()">Refresh Page 🔄</button>
+    </div>
+  </div>
+
+  <div class="container">
+
+    <a href="dashboard.html" class="back-btn">⬅️ Back to User Panel</a>
+
+    <!-- Top Dynamic Banner Ad -->
+    <div class="ad-space" id="topAdSpace">Loading Top Ad...</div>
+
+    <!-- Live Coin Balance Header -->
+    <div class="balance-header">
+      <div class="user-info">
+        <div>Account User</div>
+        <div id="userEmailDisplay" style="color:var(--text-main); font-weight:bold;">Loading...</div>
+      </div>
+
+      <div class="coin-badge">
+        🪙 <span id="liveCoinBalance">0</span> Coins
+      </div>
+    </div>
+
+    <!-- Conversion Notice -->
+    <div class="rate-notice">
+      💡 Rate: 1 Correct Answer = 1 Coin | 1000 Coins = ₹5 (Min Withdrawal: 1000 Coins)
+    </div>
+
+    <!-- Anti-Cheat Switch Warning -->
+    <div id="cheatWarning">⚠️ Warning: Tab switching detected! Video paused automatically.</div>
+
+    <!-- Video Card -->
+    <div class="card">
+      <h2 style="margin-top:0; color:var(--accent-cyan);">📺 Watch Video & Earn</h2>
+      
+      <!-- Responsive Player with Seek Lock -->
+      <div class="video-responsive">
+        <div class="anti-cheat-overlay"></div>
+        <div id="youtubePlayer"></div>
+      </div>
+
+      <div style="text-align: center;">
+        <div class="timer-badge" id="timerDisplay">▶️ Play video to start timer...</div>
+      </div>
+    </div>
+
+    <!-- Questions Section -->
+    <div class="card" id="quizCard" style="display: none;">
+      <h3 style="margin-top:0; color:var(--accent-cyan);">📝 Answer Questions (1 Coin Per Correct Answer)</h3>
+      <form id="quizForm">
+        <div id="questionsContainer"></div>
+        <button type="button" class="quiz-btn" id="submitBtn" onclick="submitQuiz()">Submit Quiz & Claim Coins</button>
+      </form>
+    </div>
+
+    <!-- Bottom Dynamic Banner Ad -->
+    <div class="ad-space" id="bottomAdSpace">Loading Bottom Ad...</div>
+
+  </div>
+
+  <!-- Dummy script file to trigger AdBlock filters -->
+  <script src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js" onError="adBlockDetected()"></script>
+
+  <!-- Anti-AdBlock Script -->
+  <script>
+    let isAdBlockActive = false;
+
+    function adBlockDetected() {
+      isAdBlockActive = true;
+      document.getElementById("adblock-overlay").style.display = "flex";
+      if (window.player && typeof window.player.pauseVideo === 'function') {
+        window.player.pauseVideo();
+      }
+    }
+
+    window.addEventListener("load", () => {
+      const bait = document.createElement("div");
+      bait.className = "adsbygoogle ad-zone ad-space google-ad";
+      bait.style.cssText = "width:1px;height:1px;position:absolute;left:-999px;top:-999px;";
+      document.body.appendChild(bait);
+
+      setTimeout(() => {
+        if (bait.offsetParent === null || bait.offsetHeight === 0 || bait.clientHeight === 0) {
+          adBlockDetected();
+        }
+        bait.remove();
+      }, 300);
+    });
+  </script>
+
+  <!-- Firebase Scripts -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, get, update, set, increment, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyB13vZKTOcxKmkLC9j2RrrY_LQFr254Njk",
+      authDomain: "vidquiz-plateform.firebaseapp.com",
+      projectId: "vidquiz-plateform",
+      storageBucket: "vidquiz-plateform.firebasestorage.app",
+      messagingSenderId: "296367717015",
+      appId: "1:296367717015:web:b31e8b3f3a03218d78c7d2",
+      databaseURL: "https://vidquiz-plateform-default-rtdb.firebaseio.com"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+
+    // Helper Function to Execute Dynamic Scripts in Ad Codes
+    function renderAdCode(containerId, adCode) {
+      const container = document.getElementById(containerId);
+      if (!container || !adCode) return;
+      
+      container.innerHTML = adCode;
+      const scripts = container.getElementsByTagName("script");
+      for (let i = 0; i < scripts.length; i++) {
+        const newScript = document.createElement("script");
+        if (scripts[i].src) {
+          newScript.src = scripts[i].src;
+        } else {
+          newScript.textContent = scripts[i].textContent;
+        }
+        document.body.appendChild(newScript);
+      }
+    }
+
+    // Dynamic Ads Loader System from Firebase
+    onValue(ref(database, 'ads/index_html_top'), (snapshot) => {
+      if (snapshot.exists() && snapshot.val().code) {
+        renderAdCode("topAdSpace", snapshot.val().code);
+      }
+    });
+
+    onValue(ref(database, 'ads/index_html_bottom'), (snapshot) => {
+      if (snapshot.exists() && snapshot.val().code) {
+        renderAdCode("bottomAdSpace", snapshot.val().code);
+      }
+    });
+
+    // Verification Guard
+    const urlParams = new URLSearchParams(window.location.search);
+    const taskId = urlParams.get('taskId');
+    const storedUserId = localStorage.getItem("userId");
+    const storedEmail = localStorage.getItem("userEmail");
+    const userId = urlParams.get('userId') || storedUserId;
+
+    if (!userId || userId === "guest_user" || !taskId) {
+      alert("⚠️ Direct access denied! Please open tasks from your Dashboard Panel.");
+      window.location.href = "dashboard.html";
+    }
+
+    if (storedEmail) {
+      document.getElementById("userEmailDisplay").innerText = storedEmail;
+    }
+
+    let currentTask = null;
+    let timerSeconds = 0;
+    let timerInterval = null;
+    let isTabActive = true;
+    let isVideoPlaying = false;
+    let userCoins = 0;
+    let player = null;
+    let rawVideoId = null;
+
+    // Live Coin Balance Listener
+    const userRef = ref(database, 'users/' + userId);
+    onValue(userRef, (snapshot) => {
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        userCoins = data.coins || 0;
+        document.getElementById("liveCoinBalance").innerText = userCoins;
+      }
+    });
+
+    // Extract Video ID helper
+    function extractYouTubeId(url) {
+      const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+      const match = url ? url.match(regExp) : null;
+      return (match && match[2].length === 11) ? match[2] : url;
+    }
+
+    // Fetch Task Data
+    get(ref(database, 'tasks/' + taskId)).then((snapshot) => {
+      if (snapshot.exists()) {
+        currentTask = snapshot.val();
+        timerSeconds = currentTask.timerSeconds || 30;
+        rawVideoId = extractYouTubeId(currentTask.videoId);
+        
+        if (window.YT && window.YT.Player) {
+          initYouTubePlayer(rawVideoId);
+        }
+      } else {
+        alert("⚠️ Task not found or has been deleted!");
+        window.location.href = "dashboard.html";
+      }
+    }).catch(error => {
+      alert("Error loading task. Redirecting to dashboard.");
+      window.location.href = "dashboard.html";
+    });
+
+    // YouTube API Ready Callback
+    window.onYouTubeIframeAPIReady = function() {
+      if (rawVideoId) {
+        initYouTubePlayer(rawVideoId);
+      }
+    };
+
+    function initYouTubePlayer(vId) {
+      player = new YT.Player('youtubePlayer', {
+        videoId: vId,
+        playerVars: {
+          'controls': 1,
+          'rel': 0,
+          'modestbranding': 1,
+          'enablejsapi': 1
+        },
+        events: {
+          'onStateChange': onPlayerStateChange
+        }
+      });
+      window.player = player;
+    }
+
+    // YouTube Player State Change Event Handler
+    function onPlayerStateChange(event) {
+      if (event.data === YT.PlayerState.PLAYING) {
+        if (window.isAdBlockActive) {
+          player.pauseVideo();
+          alert("⚠️ AdBlocker detected! Please disable AdBlocker to watch video.");
+          document.getElementById("adblock-overlay").style.display = "flex";
+          return;
+        }
+
+        isVideoPlaying = true;
+        startTimerSystem();
+      } else {
+        isVideoPlaying = false;
+        pauseTimerSystem();
+      }
+    }
+
+    // Timer Interval Management
+    function startTimerSystem() {
+      if (timerInterval || timerSeconds <= 0) return;
+
+      const display = document.getElementById("timerDisplay");
+      display.style.backgroundColor = "#0284c7";
+
+      timerInterval = setInterval(() => {
+        if (isTabActive && isVideoPlaying) {
+          timerSeconds--;
+          display.innerText = `⏳ Watching... Please wait: ${timerSeconds}s`;
+
+          if (timerSeconds <= 0) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            display.innerText = "✅ Video Watch Time Complete!";
+            display.style.backgroundColor = "#16a34a";
+            showQuiz();
+          }
+        }
+      }, 1000);
+    }
+
+    function pauseTimerSystem() {
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+      
+      const display = document.getElementById("timerDisplay");
+      if (timerSeconds > 0) {
+        if (!isTabActive) {
+          display.innerText = `⏸️ Tab Inactive - Timer Paused (${timerSeconds}s remaining)`;
+        } else if (!isVideoPlaying) {
+          display.innerText = `⏸️ Video Paused - Play video to resume timer (${timerSeconds}s remaining)`;
+        }
+        display.style.backgroundColor = "#d97706";
+      }
+    }
+
+    // TAB / BACKGROUND SWITCH ANTI-CHEAT LOGIC
+    document.addEventListener("visibilitychange", () => {
+      const warningBanner = document.getElementById("cheatWarning");
+      if (document.hidden) {
+        isTabActive = false;
+        pauseTimerSystem();
+        
+        // AUTO-PAUSE VIDEO WHEN USER SWITCHES TAB OR MINIMIZES APP
+        if (player && typeof player.pauseVideo === 'function' && isVideoPlaying) {
+          player.pauseVideo();
+        }
+
+        if (warningBanner) warningBanner.style.display = "block";
+      } else {
+        isTabActive = true;
+        if (warningBanner) {
+          setTimeout(() => { warningBanner.style.display = "none"; }, 4000);
+        }
+      }
+    });
+
+    function showQuiz() {
+      if (!currentTask.questions || currentTask.questions.length === 0) {
+        alert("No quiz for this task. 1 Coin added!");
+        grantReward(1);
+        return;
+      }
+
+      const container = document.getElementById("questionsContainer");
+      container.innerHTML = "";
+
+      currentTask.questions.forEach((qObj, index) => {
+        const qHTML = `
+          <div class="q-box">
+            <p style="font-weight:bold; margin-top:0;">Q${index + 1}: ${qObj.q}</p>
+            ${qObj.options.map((opt, i) => {
+              const optKey = String.fromCharCode(65 + i);
+              return `
+                <label class="option-label">
+                  <input type="radio" name="q_${index}" value="${optKey}">
+                  <span><strong>${optKey})</strong> ${opt}</span>
+                </label>
+              `;
+            }).join('')}
+          </div>
+        `;
+        container.innerHTML += qHTML;
+      });
+
+      document.getElementById("quizCard").style.display = "block";
+      document.getElementById("quizCard").scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Quiz Submission & Marking Completed Task Logic
+    window.submitQuiz = function() {
+      let correctCount = 0;
+      let totalQuestions = currentTask.questions.length;
+
+      currentTask.questions.forEach((qObj, index) => {
+        const selected = document.querySelector(`input[name="q_${index}"]:checked`);
+        if (selected && selected.value === qObj.ans) {
+          correctCount++;
+        }
+      });
+
+      if (correctCount > 0) {
+        alert(`🎉 You answered ${correctCount} out of ${totalQuestions} correctly!\n\n🪙 ${correctCount} Coins Credited to your account.`);
+        grantReward(correctCount);
+      } else {
+        if (confirm("❌ All answers were incorrect. No coins added this time.\n\nClick 'OK' to retry this task, or 'Cancel' to go back to Dashboard.")) {
+          window.location.reload();
+        } else {
+          window.location.href = "dashboard.html";
+        }
+      }
+    };
+
+    function grantReward(earnedCoins) {
+      // 1. Update total coins
+      update(ref(database, 'users/' + userId), {
+        coins: increment(earnedCoins)
+      });
+
+      // 2. Mark task as completed so it hides from dashboard
+      set(ref(database, `users/${userId}/completedTasks/${taskId}`), {
+        completedAt: new Date().toISOString(),
+        coinsEarned: earnedCoins
+      }).then(() => {
+        window.location.href = "dashboard.html";
+      });
+    }
+  </script>
+</body>
+</html>
