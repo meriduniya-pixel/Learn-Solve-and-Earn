@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - Learn & Earn</title>
+  <style>
+    :root {
+      --bg-color: #0f172a;
+      --card-bg: #1e293b;
+      --border-color: #334155;
+      --accent-cyan: #38bdf8;
+      --accent-green: #22c55e;
+      --accent-red: #ef4444;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      margin: 0;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+    }
+
+    .card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    h2, h3, h4 {
+      color: var(--accent-cyan);
+      margin-top: 0;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 12px;
+      background-color: var(--bg-color);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      color: var(--text-main);
+      box-sizing: border-box;
+    }
+
+    button {
+      padding: 8px 14px;
+      background-color: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    button:hover { opacity: 0.9; }
+
+    .btn-green { background-color: var(--accent-green); }
+    .btn-red { background-color: var(--accent-red); }
+
+    .hidden { display: none; }
+
+    /* Custom Tables & List Item UI */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+
+    .data-table th, .data-table td {
+      border: 1px solid var(--border-color);
+      padding: 10px;
+      text-align: left;
+    }
+
+    .data-table th {
+      background-color: var(--bg-color);
+      color: var(--accent-cyan);
+    }
+
+    .status-badge {
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+
+    .status-pending { background-color: #f59e0b; color: #000; }
+    .status-paid { background-color: var(--accent-green); color: #fff; }
+
+    .list-item {
+      background-color: var(--bg-color);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .question-block {
+      border: 1px dashed var(--border-color);
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 12px;
+      background-color: rgba(15, 23, 42, 0.5);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    
+    <!-- Admin Login Section -->
+    <div id="loginSection" class="card">
+      <h2>🔐 Admin Authentication</h2>
+      <p style="color: var(--text-muted); font-size: 13px;">Restricted area. Unauthorized access is logged.</p>
+      <input type="email" id="adminEmail" placeholder="Admin Email">
+      <input type="password" id="adminPassword" placeholder="Admin Password">
+      <button onclick="handleAdminLogin()">Login to Dashboard</button>
+    </div>
+
+    <!-- Admin Panel -->
+    <div id="adminPanel" class="hidden">
+      
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h2>⚙️ Admin Control Panel</h2>
+        <button class="btn-red" onclick="handleAdminLogout()">Logout</button>
+      </div>
+
+      <!-- 1. Ads Management Section (Updated with Dashboard Options) -->
+      <div class="card">
+        <h3>📢 Ads Management System</h3>
+        
+        <label style="font-size: 13px; color: var(--text-muted);">Select Page / Location for Ad Placement:</label>
+        <select id="adPlacementPage">
+          <option value="home_top">Home Page - Top Banner</option>
+          <option value="home_bottom">Home Page - Bottom Banner</option>
+          <option value="index_html_top">User Dashboard (dashboard.html) - Top Banner</option>
+          <option value="index_html_bottom">User Dashboard (dashboard.html) - Bottom Banner</option>
+          <option value="quiz_top">Quiz/Task Page - Top Banner</option>
+          <option value="quiz_bottom">Quiz/Task Page - Bottom Banner</option>
+          <option value="withdraw_page">Withdrawal Page Ad</option>
+        </select>
+
+        <label style="font-size: 13px; color: var(--text-muted);">Ad Code (HTML / JS Script):</label>
+        <textarea id="adScriptCode" rows="4" placeholder="Paste Adsterra / Google AdSense code here..."></textarea>
+
+        <button class="btn-green" onclick="saveAdsCode()">Save Ad Placement</button>
+      </div>
+
+      <!-- 2. Create New Task Section -->
+      <div class="card">
+        <h3>🎬 Add New Task Video</h3>
+        <input type="text" id="taskVideoId" placeholder="YouTube Video URL or ID">
+        <input type="number" id="taskTimer" placeholder="Watch Timer (in seconds, e.g. 30)">
+        
+        <h4>Quiz Questions (Optional)</h4>
+        <div id="questionsContainer">
+          <!-- Question block dynamically added here -->
+        </div>
+        
+        <button type="button" style="background-color: #475569; margin-bottom: 15px;" onclick="addQuestionBlock()">+ Add More Question</button>
+        <br>
+        <button class="btn-green" onclick="createNewTask()">Publish Task</button>
+      </div>
+
+      <!-- 3. Manage Active Tasks -->
+      <div class="card">
+        <h3>📋 Manage Active Tasks</h3>
+        <div id="tasksListContainer" style="color: var(--text-muted);">Loading active tasks...</div>
+      </div>
+
+      <!-- 4. Withdrawal Requests & Payout Management -->
+      <div class="card">
+        <h3>💸 Withdrawal Requests</h3>
+        <div style="overflow-x: auto;">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>User / Email</th>
+                <th>Amount (Coins / ₹)</th>
+                <th>Payment Method & Details</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="withdrawRequestsBody">
+              <tr><td colspan="5" style="text-align: center; color: var(--text-muted);">Loading payout requests...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 5. Active Users Directory -->
+      <div class="card">
+        <h3>👥 Active Users List</h3>
+        <div style="overflow-x: auto;">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>User Email</th>
+                <th>Coins Balance</th>
+                <th>Joined Date</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="activeUsersBody">
+              <tr><td colspan="4" style="text-align: center; color: var(--text-muted);">Loading active users...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Firebase Integration -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, set, get, push, remove, update, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyB13vZKTOcxKmkLC9j2RrrY_LQFr254Njk",
+      authDomain: "vidquiz-plateform.firebaseapp.com",
+      projectId: "vidquiz-plateform",
+      storageBucket: "vidquiz-plateform.firebasestorage.app",
+      messagingSenderId: "296367717015",
+      appId: "1:296367717015:web:b31e8b3f3a03218d78c7d2",
+      databaseURL: "https://vidquiz-plateform-default-rtdb.firebaseio.com"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+    const auth = getAuth(app);
+
+    const AUTHORIZED_ADMIN_EMAIL = "sanjusomvirthalor@gmail.com";
+
+    let questionCount = 0;
+
+    // Auth State Monitor
+    onAuthStateChanged(auth, (user) => {
+      if (user && user.email === AUTHORIZED_ADMIN_EMAIL) {
+        document.getElementById("loginSection").classList.add("hidden");
+        document.getElementById("adminPanel").classList.remove("hidden");
+        loadActiveTasks();
+        loadWithdrawalRequests();
+        loadActiveUsers();
+        if (questionCount === 0) addQuestionBlock();
+      } else {
+        document.getElementById("loginSection").classList.remove("hidden");
+        document.getElementById("adminPanel").classList.add("hidden");
+      }
+    });
+
+    // Admin Login Function
+    window.handleAdminLogin = function() {
+      const email = document.getElementById("adminEmail").value.trim();
+      const password = document.getElementById("adminPassword").value.trim();
+
+      if (email !== AUTHORIZED_ADMIN_EMAIL) {
+        alert("🚫 Access Denied: This email is not authorized as Admin!");
+        return;
+      }
+
+      signInWithEmailAndPassword(auth, email, password)
+        .then(() => alert("✅ Admin Access Granted!"))
+        .catch((error) => alert("Login Failed: " + error.message));
+    };
+
+    // Logout Function
+    window.handleAdminLogout = function() {
+      signOut(auth).then(() => alert("Logged out successfully."));
+    };
+
+    // Save Ads Code Placement Wise (Saves directly to 'ads/' node in Realtime DB)
+    window.saveAdsCode = function() {
+      const placement = document.getElementById("adPlacementPage").value;
+      const code = document.getElementById("adScriptCode").value;
+
+      if(!code.trim()) {
+        alert("Please paste the Ad code before saving!");
+        return;
+      }
+
+      set(ref(database, 'ads/' + placement), {
+        code: code,
+        updatedAt: new Date().toISOString()
+      }).then(() => {
+        alert(`🎉 Ad Code for '${placement}' Saved Successfully!`);
+        document.getElementById("adScriptCode").value = "";
+      }).catch((err) => alert("Error saving ad: " + err.message));
+    };
+
+    // Add Dynamic Question Field
+    window.addQuestionBlock = function() {
+      questionCount++;
+      const container = document.getElementById("questionsContainer");
+      const div = document.createElement("div");
+      div.className = "question-block";
+      div.id = `qBlock_${questionCount}`;
+      div.innerHTML = `
+        <h5 style="color: var(--accent-cyan); margin: 0 0 8px 0;">Question ${questionCount}</h5>
+        <input type="text" class="q-text" placeholder="Question Text">
+        <input type="text" class="q-optA" placeholder="Option A">
+        <input type="text" class="q-optB" placeholder="Option B">
+        <input type="text" class="q-optC" placeholder="Option C">
+        <input type="text" class="q-optD" placeholder="Option D">
+        <input type="text" class="q-ans" placeholder="Correct Answer (A/B/C/D)">
+      `;
+      container.appendChild(div);
+    };
+
+    // Create Task Function
+    window.createNewTask = function() {
+      const videoId = document.getElementById("taskVideoId").value.trim();
+      const timerSeconds = parseInt(document.getElementById("taskTimer").value) || 30;
+
+      if (!videoId) {
+        alert("Please enter a Video ID/URL!");
+        return;
+      }
+
+      let questions = [];
+      const blocks = document.querySelectorAll(".question-block");
+      blocks.forEach(block => {
+        const qText = block.querySelector(".q-text").value.trim();
+        const qAns = block.querySelector(".q-ans").value.trim().toUpperCase();
+        if (qText && qAns) {
+          questions.push({
+            q: qText,
+            options: [
+              block.querySelector(".q-optA").value,
+              block.querySelector(".q-optB").value,
+              block.querySelector(".q-optC").value,
+              block.querySelector(".q-optD").value
+            ],
+            ans: qAns
+          });
+        }
+      });
+
+      const newTaskRef = push(ref(database, 'tasks'));
+      set(newTaskRef, {
+        videoId: videoId,
+        timerSeconds: timerSeconds,
+        questions: questions,
+        createdAt: new Date().toISOString()
+      }).then(() => {
+        alert("✅ Task Published Successfully!");
+        document.getElementById("taskVideoId").value = "";
+        document.getElementById("questionsContainer").innerHTML = "";
+        questionCount = 0;
+        addQuestionBlock();
+      }).catch((err) => alert("Error adding task: " + err.message));
+    };
+
+    // Load Tasks & Delete Functionality
+    function loadActiveTasks() {
+      onValue(ref(database, 'tasks'), (snapshot) => {
+        const container = document.getElementById("tasksListContainer");
+        container.innerHTML = "";
+
+        if (!snapshot.exists()) {
+          container.innerHTML = "<div style='color: var(--text-muted);'>No active tasks found.</div>";
+          return;
+        }
+
+        snapshot.forEach((child) => {
+          const taskId = child.key;
+          const task = child.val();
+
+          const div = document.createElement("div");
+          div.className = "list-item";
+          div.innerHTML = `
+            <div>
+              <strong>Video URL/ID:</strong> ${task.videoId} <br>
+              <small style="color: var(--text-muted);">Timer: ${task.timerSeconds}s | Questions: ${task.questions ? task.questions.length : 0}</small>
+            </div>
+            <button class="btn-red" onclick="deleteTask('${taskId}')">Delete Task 🗑️</button>
+          `;
+          container.appendChild(div);
+        });
+      });
+    }
+
+    window.deleteTask = function(taskId) {
+      if (confirm("Are you sure you want to delete this task?")) {
+        remove(ref(database, 'tasks/' + taskId))
+          .then(() => alert("Task deleted successfully!"))
+          .catch((err) => alert("Failed to delete task: " + err.message));
+      }
+    };
+
+    // Load Withdrawal Requests
+    function loadWithdrawalRequests() {
+      onValue(ref(database, 'withdrawals'), (snapshot) => {
+        const tbody = document.getElementById("withdrawRequestsBody");
+        tbody.innerHTML = "";
+
+        if (!snapshot.exists()) {
+          tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted);">No withdrawal requests available.</td></tr>`;
+          return;
+        }
+
+        snapshot.forEach((child) => {
+          const reqId = child.key;
+          const req = child.val();
+          const status = req.status || 'PENDING';
+
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${req.userEmail || req.userId}</td>
+            <td>${req.coins} Coins (₹${(req.coins / 200).toFixed(2)})</td>
+            <td><strong>${req.method || 'UPI/Card'}:</strong> ${req.paymentDetails || 'N/A'}</td>
+            <td><span class="status-badge ${status === 'PAID' ? 'status-paid' : 'status-pending'}">${status}</span></td>
+            <td>
+              ${status === 'PENDING' 
+                ? `<button class="btn-green" onclick="markAsPaid('${reqId}', '${req.userId}', '${req.coins}')">Mark as Paid 💳</button>`
+                : `<span style="color: var(--accent-green); font-weight: bold;">Paid ✅</span>`
+              }
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      });
+    }
+
+    window.markAsPaid = function(reqId, userId, coins) {
+      if (confirm("Have you sent the payment/voucher manually? Proceeding will update user dashboard status.")) {
+        update(ref(database, 'withdrawals/' + reqId), {
+          status: 'PAID',
+          paidAt: new Date().toISOString()
+        });
+
+        push(ref(database, `users/${userId}/paymentHistory`), {
+          coins: coins,
+          amount: (coins / 200).toFixed(2),
+          status: 'PAID',
+          message: 'You got payment successfully! 🎉',
+          date: new Date().toISOString()
+        }).then(() => alert("✅ Marked as Paid and User Notified!"));
+      }
+    };
+
+    // Load Active Registered Users List
+    function loadActiveUsers() {
+      onValue(ref(database, 'users'), (snapshot) => {
+        const tbody = document.getElementById("activeUsersBody");
+        tbody.innerHTML = "";
+
+        if (!snapshot.exists()) {
+          tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-muted);">No registered users found.</td></tr>`;
+          return;
+        }
+
+        snapshot.forEach((child) => {
+          const userId = child.key;
+          const user = child.val();
+          const userEmail = user.email || '';
+          
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${userEmail || 'N/A'}</td>
+            <td>🪙 ${user.coins || 0} Coins</td>
+            <td>${user.joinedAt ? new Date(user.joinedAt).toLocaleDateString() : 'N/A'}</td>
+            <td>
+              <button class="btn-red" onclick="deleteUserAccount('${userId}', '${userEmail}')">Delete Account 🗑️</button>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      });
+    }
+
+    // Delete User & Trigger Automated Deletion Mail
+    window.deleteUserAccount = function(userId, userEmail) {
+      if (confirm(`Are you sure you want to delete user account (${userEmail || userId})?`)) {
+        remove(ref(database, 'users/' + userId)).then(() => {
+          alert("✅ User account deleted from database successfully!");
+          
+          if(userEmail) {
+            const subject = encodeURIComponent("Account Deletion Notice - Learn & Earn");
+            const body = encodeURIComponent(`Hello,\n\nYour account registered with ${userEmail} on Learn & Earn has been deleted by the administrator.\n\nIf you have any questions, please contact support.\n\nRegards,\nLearn & Earn Team`);
+            window.location.href = `mailto:${userEmail}?subject=${subject}&body=${body}`;
+          }
+        }).catch((err) => alert("Failed to delete user: " + err.message));
+      }
+    };
+  </script>
+</body>
+</html>
