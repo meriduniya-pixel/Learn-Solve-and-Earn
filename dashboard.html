@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Dashboard - Learn & Earn</title>
+  <style>
+    :root {
+      --bg-color: #0f172a;
+      --card-bg: #1e293b;
+      --border-color: #334155;
+      --primary-blue: #2563eb;
+      --accent-cyan: #38bdf8;
+      --accent-green: #22c55e;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    body {
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      margin: 0;
+      padding: 0;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+
+    header {
+      background-color: #0f172a;
+      border-bottom: 1px solid var(--border-color);
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .brand { font-size: 20px; font-weight: bold; color: var(--accent-cyan); }
+    
+    .logout-btn {
+      background-color: #ef4444;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 0 15px;
+    }
+
+    /* Ad Banner Slot */
+    .ad-space {
+      border: 1px dashed var(--border-color);
+      border-radius: 8px;
+      padding: 10px;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 12px;
+      margin-bottom: 20px;
+      background-color: rgba(30, 41, 59, 0.4);
+      min-height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .stats-card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-around;
+      text-align: center;
+    }
+
+    .stat-box h3 { margin: 0; color: var(--accent-cyan); font-size: 28px; }
+    .stat-box p { margin: 5px 0 0 0; color: var(--text-muted); font-size: 14px; }
+
+    .panel {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .panel-title { font-size: 18px; font-weight: bold; margin-bottom: 15px; color: var(--accent-cyan); }
+
+    .ref-box {
+      display: flex;
+      gap: 10px;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      padding: 10px;
+      background: var(--bg-color);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      color: var(--text-main);
+    }
+
+    .btn-copy {
+      background: var(--primary-blue);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .task-card {
+      background: var(--bg-color);
+      border: 1px solid var(--border-color);
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+    }
+
+    .btn-task {
+      background: var(--accent-green);
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    /* Anti-AdBlock Modal Styling */
+    #adblock-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(15, 23, 42, 0.95);
+      z-index: 99999;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .adblock-modal {
+      background-color: var(--card-bg);
+      border: 2px solid #ef4444;
+      border-radius: 12px;
+      padding: 25px;
+      max-width: 450px;
+      text-align: center;
+      box-shadow: 0 10px 25px rgba(239, 68, 68, 0.2);
+    }
+
+    .adblock-modal h2 { color: #ef4444; margin-top: 0; font-size: 22px; }
+    .adblock-modal p { color: var(--text-main); font-size: 14px; margin-bottom: 20px; }
+    .btn-refresh { background-color: #ef4444; color: white; border: none; padding: 12px 24px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 15px; }
+  </style>
+</head>
+<body oncontextmenu="return false;">
+
+  <!-- Anti-AdBlock Warning Modal -->
+  <div id="adblock-overlay">
+    <div class="adblock-modal">
+      <h2>🛡️ AdBlocker Detected!</h2>
+      <p>Aapke browser mein AdBlocker enabled hai. Earn karne ke liye please AdBlocker ko Disable karein aur page Refresh karein.</p>
+      <button class="btn-refresh" onclick="window.location.reload()">Refresh Page 🔄</button>
+    </div>
+  </div>
+
+  <header>
+    <div class="brand">🎯 Learn & Earn Dashboard</div>
+    <button class="logout-btn" onclick="handleLogout()">Logout</button>
+  </header>
+
+  <div class="container">
+    
+    <!-- Top Dynamic Banner Ad Slot -->
+    <div class="ad-space" id="topAdSpace">Loading Top Ad...</div>
+
+    <!-- Stats Row -->
+    <div class="stats-card">
+      <div class="stat-box">
+        <h3 id="userCoins">0</h3>
+        <p>Total Coins</p>
+      </div>
+      <div class="stat-box">
+        <h3 id="tasksCompleted">0</h3>
+        <p>Tasks Done</p>
+      </div>
+    </div>
+
+    <!-- Referral Section -->
+    <div class="panel">
+      <div class="panel-title">🔗 Your Referral Link</div>
+      <div class="ref-box">
+        <input type="text" id="refLinkInput" readonly value="Loading...">
+        <button class="btn-copy" onclick="copyReferralLink()">Copy Link</button>
+      </div>
+    </div>
+
+    <!-- Task Section -->
+    <div class="panel">
+      <div class="panel-title">🎬 Available Daily Task</div>
+      <div class="task-card">
+        <h4>Watch 5-8 Min Video & Answer Quiz</h4>
+        <p style="color: var(--text-muted); font-size: 13px;">Complete the video timer and answer 1 question to get 1 Coin.</p>
+        <button class="btn-task" onclick="completeTask()">Complete Task (+1 Coin)</button>
+      </div>
+    </div>
+
+    <!-- Bottom Dynamic Banner Ad Slot -->
+    <div class="ad-space" id="bottomAdSpace">Loading Bottom Ad...</div>
+
+  </div>
+
+  <!-- Anti-Hacking Protection Script: Block DevTools Keyboard Shortcuts -->
+  <script>
+    document.addEventListener("keydown", function(e) {
+      if (e.keyCode == 123 || 
+         (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74 || e.keyCode == 67)) || 
+         (e.ctrlKey && e.keyCode == 85)) {
+        e.preventDefault();
+        return false;
+      }
+    });
+  </script>
+
+  <!-- Dummy script file to trigger AdBlock filters -->
+  <script src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js" onError="adBlockDetected()"></script>
+
+  <!-- Anti-AdBlock Script -->
+  <script>
+    let isAdBlockActive = false;
+
+    function adBlockDetected() {
+      isAdBlockActive = true;
+      document.getElementById("adblock-overlay").style.display = "flex";
+    }
+
+    window.addEventListener("load", () => {
+      const bait = document.createElement("div");
+      bait.className = "adsbygoogle ad-zone ad-space google-ad";
+      bait.style.cssText = "width:1px;height:1px;position:absolute;left:-999px;top:-999px;";
+      document.body.appendChild(bait);
+
+      setTimeout(() => {
+        if (bait.offsetParent === null || bait.offsetHeight === 0 || bait.clientHeight === 0) {
+          adBlockDetected();
+        }
+        bait.remove();
+      }, 300);
+    });
+  </script>
+
+  <!-- Firebase Scripts -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, get, update, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyB13vZKTOcxKmkLC9j2RrrY_LQFr254Njk",
+      authDomain: "vidquiz-plateform.firebaseapp.com",
+      projectId: "vidquiz-plateform",
+      storageBucket: "vidquiz-plateform.firebasestorage.app",
+      messagingSenderId: "296367717015",
+      appId: "1:296367717015:web:b31e8b3f3a03218d78c7d2",
+      databaseURL: "https://vidquiz-plateform-default-rtdb.firebaseio.com"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+    const auth = getAuth(app);
+
+    let currentUserId = "";
+    let cachedTopAdCode = "";
+    let cachedBottomAdCode = "";
+
+    // Input Sanitization Helper
+    function sanitizeInput(str) {
+      if (!str) return "";
+      return str.replace(/[<>'"\/]/g, "").trim();
+    }
+
+    // Dynamic Script Execution Helper for Ads
+    function renderAdCode(containerId, adCode) {
+      const container = document.getElementById(containerId);
+      if (!container || !adCode) return;
+      
+      container.innerHTML = adCode;
+      const scripts = container.getElementsByTagName("script");
+      for (let i = 0; i < scripts.length; i++) {
+        const newScript = document.createElement("script");
+        if (scripts[i].src) {
+          newScript.src = scripts[i].src;
+        } else {
+          newScript.textContent = scripts[i].textContent;
+        }
+        document.body.appendChild(newScript);
+      }
+    }
+
+    // Dynamic Ads Listener from Firebase Database
+    onValue(ref(database, 'ads/index_html_top'), (snapshot) => {
+      if (snapshot.exists() && snapshot.val().code) {
+        cachedTopAdCode = snapshot.val().code;
+        renderAdCode("topAdSpace", cachedTopAdCode);
+      }
+    });
+
+    onValue(ref(database, 'ads/index_html_bottom'), (snapshot) => {
+      if (snapshot.exists() && snapshot.val().code) {
+        cachedBottomAdCode = snapshot.val().code;
+        renderAdCode("bottomAdSpace", cachedBottomAdCode);
+      }
+    });
+
+    // 30 SECONDS MID-ROLL AD AUTO-RELOADER LOOP
+    setInterval(() => {
+      if (!window.isAdBlockActive) {
+        if (cachedTopAdCode) renderAdCode("topAdSpace", cachedTopAdCode);
+        if (cachedBottomAdCode) renderAdCode("bottomAdSpace", cachedBottomAdCode);
+      }
+    }, 30000); // 30000 ms = 30 seconds
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        const userEmail = sanitizeInput(user.email);
+        currentUserId = userEmail.replace(/\./g, "_");
+        
+        // Referral link display
+        const refUrl = window.location.origin + "/index.html?ref=" + currentUserId;
+        document.getElementById("refLinkInput").value = refUrl;
+
+        // Fetch User Data Realtime
+        onValue(ref(database, 'users/' + currentUserId), (snapshot) => {
+          if (snapshot.exists()) {
+            const data = snapshot.val();
+            document.getElementById("userCoins").innerText = data.coins || 0;
+            document.getElementById("tasksCompleted").innerText = data.tasksCompletedCount || 0;
+          }
+        });
+      } else {
+        window.location.href = "index.html";
+      }
+    });
+
+    // Task Completion & Task-based Referral Rewards Engine
+    window.completeTask = function() {
+      if (window.isAdBlockActive) {
+        alert("⚠️ Please disable AdBlocker to proceed with tasks!");
+        document.getElementById("adblock-overlay").style.display = "flex";
+        return;
+      }
+
+      if (!currentUserId) return;
+
+      const userRef = ref(database, 'users/' + currentUserId);
+
+      get(userRef).then((snapshot) => {
+        if (snapshot.exists()) {
+          const userData = snapshot.val();
+          const currentCoins = userData.coins || 0;
+          const currentTaskCount = (userData.tasksCompletedCount || 0) + 1;
+
+          // Update current user's coins (+1) & completed task count
+          update(userRef, {
+            coins: currentCoins + 1,
+            tasksCompletedCount: currentTaskCount
+          });
+
+          // Process Referrer Bonus Reward based on Task Number
+          const referrerId = userData.referredBy;
+          if (referrerId) {
+            let refBonus = 0;
+            
+            if (currentTaskCount === 1) refBonus = 5;
+            else if (currentTaskCount === 2) refBonus = 7;
+            else if (currentTaskCount === 3) refBonus = 8;
+            else if (currentTaskCount === 4) refBonus = 10;
+            else if (currentTaskCount === 5) refBonus = 15;
+            else if (currentTaskCount === 6) refBonus = 15;
+
+            if (refBonus > 0) {
+              const referrerRef = ref(database, 'users/' + referrerId);
+              get(referrerRef).then((refSnap) => {
+                if (refSnap.exists()) {
+                  const refCoins = refSnap.val().coins || 0;
+                  update(referrerRef, {
+                    coins: refCoins + refBonus
+                  });
+                }
+              });
+            }
+          }
+
+          alert("🎉 Task Completed! You earned 1 Coin.");
+        }
+      });
+    };
+
+    window.copyReferralLink = function() {
+      const copyText = document.getElementById("refLinkInput");
+      copyText.select();
+      navigator.clipboard.writeText(copyText.value);
+      alert("Referral link copied!");
+    };
+
+    window.handleLogout = function() {
+      signOut(auth).then(() => {
+        window.location.href = "index.html";
+      });
+    };
+  </script>
+</body>
+</html>
