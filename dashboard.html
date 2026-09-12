@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Dashboard - Learn & Earn</title>
+  <style>
+    :root {
+      --bg-color: #0f172a;
+      --card-bg: #1e293b;
+      --border-color: #334155;
+      --primary-blue: #2563eb;
+      --accent-cyan: #38bdf8;
+      --accent-green: #22c55e;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      margin: 0;
+      padding: 0;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+
+    header {
+      background-color: #0f172a;
+      border-bottom: 1px solid var(--border-color);
+      padding: 12px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .brand { 
+      font-size: 18px; 
+      font-weight: bold; 
+      color: var(--accent-cyan); 
+    }
+    
+    .header-right {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .user-profile-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(30, 41, 59, 0.6);
+      border: 1px solid var(--border-color);
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+    }
+
+    .user-email-text {
+      color: var(--text-main);
+      font-weight: 500;
+      max-width: 130px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .active-tag {
+      background-color: rgba(34, 197, 94, 0.15);
+      color: #4ade80;
+      border: 1px solid var(--accent-green);
+      font-size: 10px;
+      font-weight: bold;
+      padding: 2px 6px;
+      border-radius: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-withdraw-nav {
+      background-color: var(--accent-green);
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 12px;
+      transition: background-color 0.2s;
+      white-space: nowrap;
+    }
+
+    .btn-withdraw-nav:hover { background-color: #16a34a; }
+
+    .logout-btn {
+      background-color: #ef4444;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 15px auto;
+      padding: 0 12px;
+    }
+
+    /* Ad Banner Slot Adjustments */
+    .ad-space {
+      border: 1px dashed var(--border-color);
+      border-radius: 8px;
+      padding: 10px;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 12px;
+      margin-bottom: 20px;
+      background-color: rgba(30, 41, 59, 0.4);
+      min-height: 250px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .stats-card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-around;
+      text-align: center;
+    }
+
+    .stat-box h3 { margin: 0; color: var(--accent-cyan); font-size: 24px; }
+    .stat-box p { margin: 4px 0 0 0; color: var(--text-muted); font-size: 13px; }
+
+    .panel {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+
+    .panel-title { font-size: 16px; font-weight: bold; margin-bottom: 12px; color: var(--accent-cyan); }
+
+    .ref-box {
+      display: flex;
+      gap: 8px;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      padding: 10px;
+      background: var(--bg-color);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      color: var(--text-main);
+      font-size: 13px;
+      min-width: 0;
+    }
+
+    .btn-copy {
+      background: var(--primary-blue);
+      color: white;
+      border: none;
+      padding: 10px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .task-card {
+      background: var(--bg-color);
+      border: 1px solid var(--border-color);
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .task-info h4 { margin: 0 0 4px 0; color: var(--text-main); font-size: 14px; }
+    .task-info p { margin: 0; color: var(--text-muted); font-size: 12px; }
+
+    .btn-task {
+      background: var(--accent-green);
+      color: white;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    /* Anti-AdBlock Modal Styling */
+    #adblock-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(15, 23, 42, 0.95);
+      z-index: 99999;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .adblock-modal {
+      background-color: var(--card-bg);
+      border: 2px solid #ef4444;
+      border-radius: 12px;
+      padding: 20px;
+      max-width: 400px;
+      text-align: center;
+      box-shadow: 0 10px 25px rgba(239, 68, 68, 0.2);
+    }
+
+    .adblock-modal h2 { color: #ef4444; margin-top: 0; font-size: 20px; }
+    .adblock-modal p { color: var(--text-main); font-size: 13px; margin-bottom: 18px; }
+    .btn-refresh { background-color: #ef4444; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 14px; }
+
+    /* Custom Popup Modal Styling */
+    #customAlertOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(15, 23, 42, 0.85);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 100000;
+    }
+
+    .custom-alert-box {
+      background-color: var(--card-bg);
+      border: 1px solid var(--accent-cyan);
+      border-radius: 12px;
+      padding: 20px;
+      width: 90%;
+      max-width: 360px;
+      text-align: center;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    }
+
+    .custom-alert-header {
+      font-size: 14px;
+      font-weight: bold;
+      color: var(--accent-cyan);
+      margin-bottom: 10px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 6px;
+    }
+
+    .custom-alert-body {
+      font-size: 13px;
+      color: var(--text-main);
+      margin-bottom: 18px;
+      line-height: 1.4;
+      white-space: pre-line;
+    }
+
+    .custom-alert-btn {
+      background-color: var(--primary-blue);
+      color: white;
+      border: none;
+      padding: 8px 20px;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    /* Mobile Responsive Optimizations */
+    @media (max-width: 600px) {
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .header-right {
+        width: 100%;
+        justify-content: space-between;
+      }
+      .user-email-text {
+        max-width: 100px;
+      }
+      .task-card {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .btn-task {
+        width: 100%;
+        margin-top: 8px;
+      }
+    }
+  </style>
+</head>
+<body oncontextmenu="return false;">
+
+  <!-- Custom Popup Modal -->
+  <div id="customAlertOverlay">
+    <div class="custom-alert-box">
+      <div class="custom-alert-header">Learn, Solve and Earn says</div>
+      <div class="custom-alert-body" id="customAlertMessage">Notification message</div>
+      <button class="custom-alert-btn" onclick="closeCustomAlert()">OK</button>
+    </div>
+  </div>
+
+  <!-- Anti-AdBlock Warning Modal -->
+  <div id="adblock-overlay">
+    <div class="adblock-modal">
+      <h2>🛡️ AdBlocker Detected!</h2>
+      <p>Aapke browser mein AdBlocker enabled hai. Earn karne ke liye please AdBlocker ko Disable karein aur page Refresh karein.</p>
+      <button class="btn-refresh" onclick="window.location.reload()">Refresh Page 🔄</button>
+    </div>
+  </div>
+
+  <header>
+    <div class="brand">🎯 Learn & Earn Dashboard</div>
+
+    <div class="header-right">
+      <div class="user-profile-badge">
+        <span class="user-email-text" id="headerUserEmail">Loading...</span>
+        <span class="active-tag">🟢 Active</span>
+      </div>
+      <div class="header-actions">
+        <button class="btn-withdraw-nav" onclick="handleWithdrawClick()">Withdraw 💸</button>
+        <button class="logout-btn" onclick="handleLogout()">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    
+    <!-- Top Banner Ad Slot -->
+    <div class="ad-space" id="topAdSpace">Loading Top Ad...</div>
+
+    <!-- Stats Row -->
+    <div class="stats-card">
+      <div class="stat-box">
+        <h3 id="userCoins">0</h3>
+        <p>Total Coins</p>
+      </div>
+      <div class="stat-box">
+        <h3 id="tasksCompleted">0</h3>
+        <p>Tasks Done</p>
+      </div>
+    </div>
+
+    <!-- Referral Section -->
+    <div class="panel">
+      <div class="panel-title">🔗 Your Referral Link</div>
+      <div class="ref-box">
+        <input type="text" id="refLinkInput" readonly value="Loading...">
+        <button class="btn-copy" onclick="copyReferralLink()">Copy Link</button>
+      </div>
+    </div>
+
+    <!-- Task Section -->
+    <div class="panel">
+      <div class="panel-title">🎬 Available Daily Tasks</div>
+      <div id="tasksContainer">
+        <div style="color: var(--text-muted); text-align: center; padding: 10px;">Loading tasks...</div>
+      </div>
+    </div>
+
+    <!-- Bottom Banner Ad Slot -->
+    <div class="ad-space" id="bottomAdSpace">Loading Bottom Ad...</div>
+
+  </div>
+
+  <!-- Anti-Hacking Protection Script -->
+  <script>
+    document.addEventListener("keydown", function(e) {
+      if (e.keyCode == 123 || 
+         (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74 || e.keyCode == 67)) || 
+         (e.ctrlKey && e.keyCode == 85)) {
+        e.preventDefault();
+        return false;
+      }
+    });
+
+    window.showAlert = function(message, callback = null) {
+      document.getElementById("customAlertMessage").innerText = message;
+      document.getElementById("customAlertOverlay").style.display = "flex";
+      window.customAlertCallback = callback;
+    };
+
+    window.closeCustomAlert = function() {
+      document.getElementById("customAlertOverlay").style.display = "none";
+      if (typeof window.customAlertCallback === 'function') {
+        window.customAlertCallback();
+        window.customAlertCallback = null;
+      }
+    };
+  </script>
+
+  <!-- Dummy script file for AdBlock -->
+  <script src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js" onError="adBlockDetected()"></script>
+
+  <!-- Anti-AdBlock Script -->
+  <script>
+    let isAdBlockActive = false;
+
+    function adBlockDetected() {
+      isAdBlockActive = true;
+      document.getElementById("adblock-overlay").style.display = "flex";
+      const container = document.getElementById("tasksContainer");
+      if (container) {
+        container.innerHTML = "<div style='color: #ef4444; text-align: center; padding: 15px; font-weight: bold;'>⚠️ Tasks are hidden because AdBlocker is enabled. Please disable AdBlocker to view tasks.</div>";
+      }
+    }
+
+    window.addEventListener("load", () => {
+      const bait = document.createElement("div");
+      bait.className = "adsbygoogle ad-zone ad-space google-ad";
+      bait.style.cssText = "width:1px;height:1px;position:absolute;left:-999px;top:-999px;";
+      document.body.appendChild(bait);
+
+      setTimeout(() => {
+        if (bait.offsetParent === null || bait.offsetHeight === 0 || bait.clientHeight === 0) {
+          adBlockDetected();
+        }
+        bait.remove();
+      }, 300);
+    });
+  </script>
+
+  <!-- Firebase Scripts -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, get, update, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyB13vZKTOcxKmkLC9j2RrrY_LQFr254Njk",
+      authDomain: "vidquiz-plateform.firebaseapp.com",
+      projectId: "vidquiz-plateform",
+      storageBucket: "vidquiz-plateform.firebasestorage.app",
+      messagingSenderId: "296367717015",
+      appId: "1:296367717015:web:b31e8b3f3a03218d78c7d2",
+      databaseURL: "https://vidquiz-plateform-default-rtdb.firebaseio.com"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+    const auth = getAuth(app);
+
+    let currentUserId = "";
+    let completedTaskIds = [];
+    let currentCoins = 0;
+    let cachedTopAdCode = "";
+    let cachedBottomAdCode = "";
+
+    function sanitizeInput(str) {
+      if (!str) return "";
+      return str.replace(/[<>'"\/]/g, "").trim();
+    }
+
+    // UPDATED: Dynamic Script Execution Mechanism
+    function renderAdCode(containerId, adCode) {
+      const container = document.getElementById(containerId);
+      if (!container || !adCode) return;
+      
+      container.innerHTML = adCode;
+      
+      // Extract and safely execute scripts
+      const scripts = Array.from(container.getElementsByTagName("script"));
+      scripts.forEach((oldScript) => {
+        const newScript = document.createElement("script");
+        
+        Array.from(oldScript.attributes).forEach(attr => {
+          newScript.setAttribute(attr.name, attr.value);
+        });
+
+        if (oldScript.src) {
+          newScript.src = oldScript.src;
+        } else {
+          newScript.textContent = oldScript.textContent;
+        }
+
+        oldScript.parentNode.replaceChild(newScript, oldScript);
+      });
+    }
+
+    onValue(ref(database, 'ads/index_html_top'), (snapshot) => {
+      if (snapshot.exists() && snapshot.val().code) {
+        cachedTopAdCode = snapshot.val().code;
+        renderAdCode("topAdSpace", cachedTopAdCode);
+      }
+    });
+
+    onValue(ref(database, 'ads/index_html_bottom'), (snapshot) => {
+      if (snapshot.exists() && snapshot.val().code) {
+        cachedBottomAdCode = snapshot.val().code;
+        renderAdCode("bottomAdSpace", cachedBottomAdCode);
+      }
+    });
+
+    // UPDATED: Ads Auto-Reloaded Every 15 Seconds (15000 ms)
+    setInterval(() => {
+      if (!window.isAdBlockActive) {
+        if (cachedTopAdCode) renderAdCode("topAdSpace", cachedTopAdCode);
+        if (cachedBottomAdCode) renderAdCode("bottomAdSpace", cachedBottomAdCode);
+      }
+    }, 15000);
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        const userEmail = sanitizeInput(user.email);
+        currentUserId = userEmail.replace(/\./g, "_");
+        
+        document.getElementById("headerUserEmail").innerText = userEmail;
+
+        const refUrl = window.location.origin + "/index.html?ref=" + currentUserId;
+        document.getElementById("refLinkInput").value = refUrl;
+
+        onValue(ref(database, 'users/' + currentUserId), (snapshot) => {
+          if (snapshot.exists()) {
+            const data = snapshot.val();
+            currentCoins = data.coins || 0;
+            document.getElementById("userCoins").innerText = currentCoins;
+            completedTaskIds = data.completedTasks ? Object.keys(data.completedTasks) : [];
+            document.getElementById("tasksCompleted").innerText = completedTaskIds.length;
+
+            loadAvailableTasks();
+          }
+        });
+      } else {
+        window.location.href = "index.html";
+      }
+    });
+
+    window.handleWithdrawClick = function() {
+      if (currentCoins >= 1000) {
+        window.location.href = "withdraw.html";
+      } else {
+        showAlert(`⚠️ Minimum 1000 Coins required to withdraw!\n\nYour current balance: ${currentCoins} Coins.\nComplete more video tasks to reach 1000 Coins.`);
+      }
+    };
+
+    function loadAvailableTasks() {
+      const container = document.getElementById("tasksContainer");
+
+      if (window.isAdBlockActive) {
+        container.innerHTML = "<div style='color: #ef4444; text-align: center; padding: 15px; font-weight: bold;'>⚠️ Tasks are hidden because AdBlocker is enabled. Please disable AdBlocker to view tasks.</div>";
+        return;
+      }
+
+      onValue(ref(database, 'tasks'), (snapshot) => {
+        container.innerHTML = "";
+        if (!snapshot.exists()) {
+          container.innerHTML = "<div style='color: var(--text-muted); text-align: center;'>No tasks available right now.</div>";
+          return;
+        }
+
+        let visibleCount = 0;
+        snapshot.forEach((child) => {
+          const taskId = child.key;
+          const task = child.val();
+          
+          if (!completedTaskIds.includes(taskId)) {
+            visibleCount++;
+            container.innerHTML += `
+              <div class="task-card">
+                <div class="task-info">
+                  <h4>${task.title || 'Watch Video & Earn'}</h4>
+                  <p>⏱️ Duration: ${task.timerSeconds || 30}s | 🪙 Reward: 1 Coin</p>
+                </div>
+                <button class="btn-task" onclick="openTask('${taskId}')">Start Task 🎬</button>
+              </div>
+            `;
+          }
+        });
+
+        if (visibleCount === 0) {
+          container.innerHTML = "<div style='color: var(--text-muted); text-align: center; padding: 10px;'>🎉 All tasks completed for today!</div>";
+        }
+      });
+    }
+
+    window.openTask = function(taskId) {
+      if (window.isAdBlockActive) {
+        showAlert("⚠️ Please disable AdBlocker to start task!");
+        document.getElementById("adblock-overlay").style.display = "flex";
+        return;
+      }
+      window.location.href = `task.html?taskId=${taskId}&userId=${currentUserId}`;
+    };
+
+    window.copyReferralLink = function() {
+      const copyText = document.getElementById("refLinkInput");
+      copyText.select();
+      navigator.clipboard.writeText(copyText.value);
+      showAlert("Referral link copied!");
+    };
+
+    window.handleLogout = function() {
+      signOut(auth).then(() => {
+        window.location.href = "index.html";
+      });
+    };
+  </script>
+</body>
+</html>
