@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Dashboard - Learn & Earn</title>
+  <style>
+    :root {
+      --bg-color: #0f172a;
+      --card-bg: #1e293b;
+      --border-color: #334155;
+      --primary-blue: #2563eb;
+      --accent-cyan: #38bdf8;
+      --accent-green: #22c55e;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      margin: 0;
+      padding: 0;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+
+    header {
+      background-color: #0f172a;
+      border-bottom: 1px solid var(--border-color);
+      padding: 12px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .brand { 
+      font-size: 18px; 
+      font-weight: bold; 
+      color: var(--accent-cyan); 
+    }
+    
+    .header-right {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .user-profile-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(30, 41, 59, 0.6);
+      border: 1px solid var(--border-color);
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+    }
+
+    .user-email-text {
+      color: var(--text-main);
+      font-weight: 500;
+      max-width: 130px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .active-tag {
+      background-color: rgba(34, 197, 94, 0.15);
+      color: #4ade80;
+      border: 1px solid var(--accent-green);
+      font-size: 10px;
+      font-weight: bold;
+      padding: 2px 6px;
+      border-radius: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .unverified-tag {
+      background-color: rgba(239, 68, 68, 0.15);
+      color: #f87171;
+      border: 1px solid #ef4444;
+      font-size: 10px;
+      font-weight: bold;
+      padding: 2px 6px;
+      border-radius: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-withdraw-nav {
+      background-color: var(--accent-green);
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 12px;
+      transition: background-color 0.2s;
+      white-space: nowrap;
+    }
+
+    .btn-withdraw-nav:hover { background-color: #16a34a; }
+
+    .logout-btn {
+      background-color: #ef4444;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 15px auto;
+      padding: 0 12px;
+    }
+
+    .ad-space {
+      border: 1px dashed var(--border-color);
+      border-radius: 8px;
+      padding: 10px;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 12px;
+      margin-bottom: 20px;
+      background-color: rgba(30, 41, 59, 0.4);
+      min-height: 250px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .stats-card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-around;
+      text-align: center;
+    }
+
+    .stat-box h3 { margin: 0; color: var(--accent-cyan); font-size: 24px; }
+    .stat-box p { margin: 4px 0 0 0; color: var(--text-muted); font-size: 13px; }
+
+    .panel {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+
+    .panel-title { font-size: 16px; font-weight: bold; margin-bottom: 12px; color: var(--accent-cyan); }
+
+    /* Rewarded Ad Card Styling */
+    .reward-ad-box {
+      background: linear-gradient(135deg, rgba(147, 51, 234, 0.2), rgba(56, 189, 248, 0.15));
+      border: 1px solid #a855f7;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .reward-ad-info h4 { margin: 0 0 4px 0; color: #c084fc; font-size: 15px; }
+    .reward-ad-info p { margin: 0; color: var(--text-muted); font-size: 12px; }
+
+    .btn-reward-ad {
+      background: linear-gradient(135deg, #a855f7, #7e22ce);
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 6px;
+      font-weight: bold;
+      font-size: 13px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: opacity 0.2s;
+    }
+
+    .btn-reward-ad:disabled {
+      background: var(--border-color);
+      color: var(--text-muted);
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+
+    /* Daily Bonus Card Styling */
+    .bonus-box {
+      background: linear-gradient(135deg, rgba(37, 99, 235, 0.2), rgba(56, 189, 248, 0.1));
+      border: 1px solid var(--accent-cyan);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .bonus-info h4 { margin: 0 0 4px 0; color: var(--accent-cyan); font-size: 15px; }
+    .bonus-info p { margin: 0; color: var(--text-muted); font-size: 12px; }
+
+    .btn-bonus {
+      background-color: #f59e0b;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 6px;
+      font-weight: bold;
+      font-size: 13px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: opacity 0.2s;
+    }
+
+    .btn-bonus:disabled {
+      background-color: var(--border-color);
+      color: var(--text-muted);
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+
+    .verify-box {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid #ef4444;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .verify-box h4 { margin: 0 0 8px 0; color: #ef4444; font-size: 16px; }
+    .verify-box p { margin: 0 0 12px 0; color: var(--text-main); font-size: 13px; }
+
+    .verify-actions {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn-verify-action {
+      background-color: var(--primary-blue);
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-weight: bold;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .btn-verify-refresh {
+      background-color: var(--accent-green);
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-weight: bold;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .ref-box { display: flex; gap: 8px; }
+
+    input[type="text"] {
+      flex: 1;
+      padding: 10px;
+      background: var(--bg-color);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      color: var(--text-main);
+      font-size: 13px;
+      min-width: 0;
+    }
+
+    .btn-copy {
+      background: var(--primary-blue);
+      color: white;
+      border: none;
+      padding: 10px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .task-card {
+      background: var(--bg-color);
+      border: 1px solid var(--border-color);
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .task-info h4 { margin: 0 0 4px 0; color: var(--text-main); font-size: 14px; }
+    .task-info p { margin: 0; color: var(--text-muted); font-size: 12px; }
+
+    .btn-task {
+      background: var(--accent-green);
+      color: white;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    #adblock-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(15, 23, 42, 0.95);
+      z-index: 99999;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .adblock-modal {
+      background-color: var(--card-bg);
+      border: 2px solid #ef4444;
+      border-radius: 12px;
+      padding: 20px;
+      max-width: 400px;
+      text-align: center;
+      box-shadow: 0 10px 25px rgba(239, 68, 68, 0.2);
+    }
+
+    .adblock-modal h2 { color: #ef4444; margin-top: 0; font-size: 20px; }
+    .adblock-modal p { color: var(--text-main); font-size: 13px; margin-bottom: 18px; }
+    .btn-refresh { background-color: #ef4444; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 14px; }
+
+    #customAlertOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(15, 23, 42, 0.85);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 100000;
+    }
+
+    .custom-alert-box {
+      background-color: var(--card-bg);
+      border: 1px solid var(--accent-cyan);
+      border-radius: 12px;
+      padding: 20px;
+      width: 90%;
+      max-width: 360px;
+      text-align: center;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    }
+
+    .custom-alert-header {
+      font-size: 14px;
+      font-weight: bold;
+      color: var(--accent-cyan);
+      margin-bottom: 10px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 6px;
+    }
+
+    .custom-alert-body {
+      font-size: 13px;
+      color: var(--text-main);
+      margin-bottom: 18px;
+      line-height: 1.4;
+      white-space: pre-line;
+    }
+
+    .custom-alert-btn {
+      background-color: var(--primary-blue);
+      color: white;
+      border: none;
+      padding: 8px 20px;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    @media (max-width: 600px) {
+      header { flex-direction: column; align-items: flex-start; }
+      .header-right { width: 100%; justify-content: space-between; }
+      .user-email-text { max-width: 100px; }
+      .task-card, .bonus-box, .reward-ad-box { flex-direction: column; align-items: flex-start; }
+      .btn-task, .btn-bonus, .btn-reward-ad { width: 100%; margin-top: 8px; }
+    }
+  </style>
+</head>
+<body oncontextmenu="return false;">
+
+  <!-- Custom Popup Modal -->
+  <div id="customAlertOverlay">
+    <div class="custom-alert-box">
+      <div class="custom-alert-header">Learn, Solve and Earn says</div>
+      <div class="custom-alert-body" id="customAlertMessage">Notification message</div>
+      <button class="custom-alert-btn" onclick="closeCustomAlert()">OK</button>
+    </div>
+  </div>
+
+  <!-- Anti-AdBlock Warning Modal -->
+  <div id="adblock-overlay">
+    <div class="adblock-modal">
+      <h2>🛡️ AdBlocker Detected!</h2>
+      <p>Aapke browser mein AdBlocker enabled hai. Earn karne ke liye please AdBlocker ko Disable karein aur page Refresh karein.</p>
+      <button class="btn-refresh" onclick="window.location.reload()">Refresh Page 🔄</button>
+    </div>
+  </div>
+
+  <header>
+    <div class="brand">🎯 Learn & Earn Dashboard</div>
+
+    <div class="header-right">
+      <div class="user-profile-badge">
+        <span class="user-email-text" id="headerUserEmail">Loading...</span>
+        <span class="active-tag" id="statusBadge">🟢 Active</span>
+      </div>
+      <div class="header-actions">
+        <button class="btn-withdraw-nav" onclick="handleWithdrawClick()">Withdraw 💸</button>
+        <button class="logout-btn" onclick="handleLogout()">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    
+    <!-- Top Banner Ad Slot -->
+    <div class="ad-space" id="topAdSpace">Loading Top Ad...</div>
+
+    <!-- Email Verification Alert Box -->
+    <div class="verify-box" id="verifyBox" style="display: none;">
+      <h4>⚠️ Email Verification Required!</h4>
+      <p>Aapka account abhi verify nahi hua hai. Tasks unlock karne aur coins earn karne ke liye apna email verify karein.</p>
+      <div class="verify-actions">
+        <button class="btn-verify-action" onclick="sendEmailVerificationLink()">Send Verification Link ✉️</button>
+        <button class="btn-verify-refresh" onclick="checkVerificationStatus()">I Have Verified / Refresh 🔄</button>
+      </div>
+    </div>
+
+    <!-- Stats Row -->
+    <div class="stats-card">
+      <div class="stat-box">
+        <h3 id="userCoins">0</h3>
+        <p>Total Coins</p>
+      </div>
+      <div class="stat-box">
+        <h3 id="tasksCompleted">0</h3>
+        <p>Tasks Done</p>
+      </div>
+    </div>
+
+    <!-- 📺 Rewarded Ad Section (25 Sec, Auto-Reload 5s, 3 Coins) -->
+    <div class="reward-ad-box">
+      <div class="reward-ad-info">
+        <h4>📺 Watch Ad & Earn Coins (+3 Coins)</h4>
+        <p id="rewardAdSubText">Watch a quick ad for 25 seconds to instantly earn 3 Coins!</p>
+      </div>
+      <button class="btn-reward-ad" id="watchAdBtn" onclick="startRewardedAd()">Watch Ad 🎬</button>
+    </div>
+
+    <!-- 🎁 Daily Bonus Section (+5 Coins, Unlocks after 1 Task) -->
+    <div class="bonus-box">
+      <div class="bonus-info">
+        <h4>🎁 Daily Bonus (+5 Coins)</h4>
+        <p id="bonusSubText">Complete at least 1 task today to claim your daily bonus!</p>
+      </div>
+      <button class="btn-bonus" id="claimBonusBtn" onclick="claimDailyBonus()">Claim 5 Coins 🪙</button>
+    </div>
+
+    <!-- Referral Section -->
+    <div class="panel">
+      <div class="panel-title">🔗 Your Referral Link</div>
+      <div class="ref-box">
+        <input type="text" id="refLinkInput" readonly value="Loading...">
+        <button class="btn-copy" onclick="copyReferralLink()">Copy Link</button>
+      </div>
+    </div>
+
+    <!-- Task Section -->
+    <div class="panel">
+      <div class="panel-title">🎬 Available Daily Tasks</div>
+      <div id="tasksContainer">
+        <div style="color: var(--text-muted); text-align: center; padding: 10px;">Loading tasks...</div>
+      </div>
+    </div>
+
+    <!-- Bottom Banner Ad Slot -->
+    <div class="ad-space" id="bottomAdSpace">Loading Bottom Ad...</div>
+
+  </div>
+
+  <!-- Anti-Hacking Protection Script -->
+  <script>
+    document.addEventListener("keydown", function(e) {
+      if (e.keyCode == 123 || 
+         (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74 || e.keyCode == 67)) || 
+         (e.ctrlKey && e.keyCode == 85)) {
+        e.preventDefault();
+        return false;
+      }
+    });
+
+    window.showAlert = function(message, callback = null) {
+      document.getElementById("customAlertMessage").innerText = message;
+      document.getElementById("customAlertOverlay").style.display = "flex";
+      window.customAlertCallback = callback;
+    };
+
+    window.closeCustomAlert = function() {
+      document.getElementById("customAlertOverlay").style.display = "none";
+      if (typeof window.customAlertCallback === 'function') {
+        window.customAlertCallback();
+        window.customAlertCallback = null;
+      }
+    };
+  </script>
+
+  <!-- Dummy script file for AdBlock -->
+  <script src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js" onError="adBlockDetected()"></script>
+
+  <!-- Anti-AdBlock Script -->
+  <script>
+    let isAdBlockActive = false;
+
+    function adBlockDetected() {
+      isAdBlockActive = true;
+      document.getElementById("adblock-overlay").style.display = "flex";
+      const container = document.getElementById("tasksContainer");
+      if (container) {
+        container.innerHTML = "<div style='color: #ef4444; text-align: center; padding: 15px; font-weight: bold;'>⚠️ Tasks are hidden because AdBlocker is enabled. Please disable AdBlocker to view tasks.</div>";
+      }
+    }
+
+    window.addEventListener("load", () => {
+      const bait = document.createElement("div");
+      bait.className = "adsbygoogle ad-zone ad-space google-ad";
+      bait.style.cssText = "width:1px;height:1px;position:absolute;left:-999px;top:-999px;";
+      document.body.appendChild(bait);
+
+      setTimeout(() => {
+        if (bait.offsetParent === null || bait.offsetHeight === 0 || bait.clientHeight === 0) {
+          adBlockDetected();
+        }
+        bait.remove();
+      }, 300);
+    });
+  </script>
+
+  <!-- Firebase Scripts -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, get, update, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    import { getAuth, signOut, onAuthStateChanged, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyB13vZKTOcxKmkLC9j2RrrY_LQFr254Njk",
+      authDomain: "vidquiz-plateform.firebaseapp.com",
+      projectId: "vidquiz-plateform",
+      storageBucket: "vidquiz-plateform.firebasestorage.app",
+      messagingSenderId: "296367717015",
+      appId: "1:296367717015:web:b31e8b3f3a03218d78c7d2",
+      databaseURL: "https://vidquiz-plateform-default-rtdb.firebaseio.com"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+    const auth = getAuth(app);
+
+    // 🎯 Adsterra Link Target
+    const ADSTERRA_DIRECT_LINK = "https://www.profitableratecpmnetwork.com/acgk250eg?key=5f117e72f5f6039f24979b7d1609ab0c";
+
+    let currentUserId = "";
+    let completedTaskIds = [];
+    let currentCoins = 0;
+    let lastBonusDate = "";
+    let isWatchingAd = false;
+    let cachedTopAdCode = "";
+    let cachedBottomAdCode = "";
+    let currentUserObj = null;
+
+    function sanitizeInput(str) {
+      if (!str) return "";
+      return str.replace(/[<>'"\/]/g, "").trim();
+    }
+
+    function renderAdCode(containerId, adCode) {
+      const container = document.getElementById(containerId);
+      if (!container || !adCode) return;
+      
+      container.innerHTML = adCode;
+      
+      const scripts = Array.from(container.getElementsByTagName("script"));
+      scripts.forEach((oldScript) => {
+        const newScript = document.createElement("script");
+        
+        Array.from(oldScript.attributes).forEach(attr => {
+          newScript.setAttribute(attr.name, attr.value);
+        });
+
+        if (oldScript.src) {
+          newScript.src = oldScript.src;
+        } else {
+          newScript.textContent = oldScript.textContent;
+        }
+
+        oldScript.parentNode.replaceChild(newScript, oldScript);
+      });
+    }
+
+    onValue(ref(database, 'ads/index_html_top'), (snapshot) => {
+      if (snapshot.exists() && snapshot.val().code) {
+        cachedTopAdCode = snapshot.val().code;
+        renderAdCode("topAdSpace", cachedTopAdCode);
+      }
+    });
+
+    onValue(ref(database, 'ads/index_html_bottom'), (snapshot) => {
+      if (snapshot.exists() && snapshot.val().code) {
+        cachedBottomAdCode = snapshot.val().code;
+        renderAdCode("bottomAdSpace", cachedBottomAdCode);
+      }
+    });
+
+    setInterval(() => {
+      if (!window.isAdBlockActive) {
+        if (cachedTopAdCode) renderAdCode("topAdSpace", cachedTopAdCode);
+        if (cachedBottomAdCode) renderAdCode("bottomAdSpace", cachedBottomAdCode);
+      }
+    }, 15000);
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        currentUserObj = user;
+        const userEmail = sanitizeInput(user.email);
+        currentUserId = userEmail.replace(/\./g, "_");
+        
+        document.getElementById("headerUserEmail").innerText = userEmail;
+
+        const refUrl = window.location.origin + "/index.html?ref=" + currentUserId;
+        document.getElementById("refLinkInput").value = refUrl;
+
+        if (user.emailVerified) {
+          document.getElementById("verifyBox").style.display = "none";
+          document.getElementById("statusBadge").className = "active-tag";
+          document.getElementById("statusBadge").innerText = "🟢 Verified";
+        } else {
+          document.getElementById("verifyBox").style.display = "block";
+          document.getElementById("statusBadge").className = "unverified-tag";
+          document.getElementById("statusBadge").innerText = "🔴 Unverified";
+        }
+
+        onValue(ref(database, 'users/' + currentUserId), (snapshot) => {
+          if (snapshot.exists()) {
+            const data = snapshot.val();
+            currentCoins = data.coins || 0;
+            lastBonusDate = data.lastBonusDate || "";
+            document.getElementById("userCoins").innerText = currentCoins;
+            completedTaskIds = data.completedTasks ? Object.keys(data.completedTasks) : [];
+            document.getElementById("tasksCompleted").innerText = completedTaskIds.length;
+
+            updateBonusUI();
+            loadAvailableTasks();
+          }
+        });
+      } else {
+        window.location.href = "index.html";
+      }
+    });
+
+    // 📺 REWARDED AD SYSTEM (25 Sec, Auto-Reload har 5 Sec, 3 Coins Reward)
+    window.startRewardedAd = function() {
+      if (window.isAdBlockActive) {
+        showAlert("⚠️ Please disable AdBlocker first!");
+        return;
+      }
+
+      if (currentUserObj && !currentUserObj.emailVerified) {
+        showAlert("⚠️ Please verify your email first!");
+        return;
+      }
+
+      if (isWatchingAd) return;
+
+      isWatchingAd = true;
+      const watchAdBtn = document.getElementById("watchAdBtn");
+      const subText = document.getElementById("rewardAdSubText");
+      
+      // First ad window open
+      let adWindow = window.open(ADSTERRA_DIRECT_LINK, '_blank');
+
+      let timer = 25;
+      watchAdBtn.disabled = true;
+      watchAdBtn.innerText = `Please wait ${timer}s... ⏳`;
+      subText.innerText = "Viewing ad in background. Ads auto-reloading every 5s!";
+
+      // Auto-reload ad window every 5 seconds
+      const autoReloadInterval = setInterval(() => {
+        if (timer > 5) {
+          window.open(ADSTERRA_DIRECT_LINK, '_blank');
+        }
+      }, 5000);
+
+      // Main 1-second Countdown timer
+      const countdownInterval = setInterval(() => {
+        timer--;
+        watchAdBtn.innerText = `Please wait ${timer}s... ⏳`;
+
+        if (timer <= 0) {
+          clearInterval(countdownInterval);
+          clearInterval(autoReloadInterval);
+          
+          // Reward 3 Coins
+          const updatedCoins = currentCoins + 3;
+          update(ref(database, 'users/' + currentUserId), {
+            coins: updatedCoins
+          }).then(() => {
+            isWatchingAd = false;
+            watchAdBtn.disabled = false;
+            watchAdBtn.innerText = "Watch Ad 🎬";
+            subText.innerText = "Watch a quick ad for 25 seconds to instantly earn 3 Coins!";
+            showAlert("🎉 Congratulations! You received 3 Coins for watching Rewarded Ads!");
+          }).catch((err) => {
+            isWatchingAd = false;
+            watchAdBtn.disabled = false;
+            watchAdBtn.innerText = "Watch Ad 🎬";
+            showAlert("Error updating coins: " + err.message);
+          });
+        }
+      }, 1000);
+    };
+
+    // 🎁 DAILY BONUS LOGIC (5 Coins - Unlocks only if Task completed)
+    function updateBonusUI() {
+      const bonusBtn = document.getElementById("claimBonusBtn");
+      const bonusSubText = document.getElementById("bonusSubText");
+      const todayDate = new Date().toISOString().split('T')[0];
+
+      if (lastBonusDate === todayDate) {
+        bonusBtn.disabled = true;
+        bonusBtn.innerText = "Claimed Today ✅";
+        bonusSubText.innerText = "You have already claimed today's bonus. Come back tomorrow!";
+      } else if (completedTaskIds.length === 0) {
+        bonusBtn.disabled = true;
+        bonusBtn.innerText = "Locked 🔒";
+        bonusSubText.innerText = "Complete at least 1 task today to unlock this 5-coin bonus!";
+      } else {
+        bonusBtn.disabled = false;
+        bonusBtn.innerText = "Claim 5 Coins 🪙";
+        bonusSubText.innerText = "Great job! You have completed tasks. Claim your 5 coins bonus now!";
+      }
+    }
+
+    window.claimDailyBonus = function() {
+      if (window.isAdBlockActive) {
+        showAlert("⚠️ Please disable AdBlocker first!");
+        return;
+      }
+
+      if (currentUserObj && !currentUserObj.emailVerified) {
+        showAlert("⚠️ Please verify your email first!");
+        return;
+      }
+
+      const todayDate = new Date().toISOString().split('T')[0];
+
+      if (lastBonusDate === todayDate) {
+        showAlert("⚠️ You have already claimed today's bonus!");
+        return;
+      }
+
+      if (completedTaskIds.length === 0) {
+        showAlert("⚠️ You must complete at least 1 task before claiming the daily bonus!");
+        return;
+      }
+
+      const newCoins = currentCoins + 5;
+      update(ref(database, 'users/' + currentUserId), {
+        coins: newCoins,
+        lastBonusDate: todayDate
+      }).then(() => {
+        showAlert("🎉 Congratulations! You claimed 5 Daily Bonus Coins!");
+      }).catch((error) => {
+        showAlert("Error claiming bonus: " + error.message);
+      });
+    };
+
+    window.sendEmailVerificationLink = function() {
+      if (currentUserObj) {
+        sendEmailVerification(currentUserObj)
+          .then(() => {
+            showAlert("📩 Verification link sent to your email address! Please check your Inbox / Spam folder and click the link.");
+          })
+          .catch((error) => {
+            showAlert("Error sending verification email: " + error.message);
+          });
+      }
+    };
+
+    window.checkVerificationStatus = function() {
+      if (currentUserObj) {
+        currentUserObj.reload().then(() => {
+          if (currentUserObj.emailVerified) {
+            showAlert("🎉 Email Verified Successfully!", () => {
+              window.location.reload();
+            });
+          } else {
+            showAlert("❌ Email is not verified yet. Please click on the verification link sent to your email.");
+          }
+        });
+      }
+    };
+
+    window.handleWithdrawClick = function() {
+      if (currentCoins >= 1000) {
+        window.location.href = "withdraw.html";
+      } else {
+        showAlert(`⚠️ Minimum 1000 Coins required to withdraw!\n\nYour current balance: ${currentCoins} Coins.\nComplete more video tasks to reach 1000 Coins.`);
+      }
+    };
+
+    function loadAvailableTasks() {
+      const container = document.getElementById("tasksContainer");
+
+      if (window.isAdBlockActive) {
+        container.innerHTML = "<div style='color: #ef4444; text-align: center; padding: 15px; font-weight: bold;'>⚠️ Tasks are hidden because AdBlocker is enabled. Please disable AdBlocker to view tasks.</div>";
+        return;
+      }
+
+      if (currentUserObj && !currentUserObj.emailVerified) {
+        container.innerHTML = "<div style='color: #ef4444; text-align: center; padding: 15px; font-weight: bold;'>⚠️ Please verify your account first to unlock daily tasks.</div>";
+        return;
+      }
+
+      onValue(ref(database, 'tasks'), (snapshot) => {
+        container.innerHTML = "";
+        if (!snapshot.exists()) {
+          container.innerHTML = "<div style='color: var(--text-muted); text-align: center;'>No tasks available right now.</div>";
+          return;
+        }
+
+        let visibleCount = 0;
+        snapshot.forEach((child) => {
+          const taskId = child.key;
+          const task = child.val();
+          
+          if (!completedTaskIds.includes(taskId)) {
+            visibleCount++;
+            container.innerHTML += `
+              <div class="task-card">
+                <div class="task-info">
+                  <h4>${task.title || 'Watch Video & Earn'}</h4>
+                  <p>⏱️ Duration: ${task.timerSeconds || 30}s | 🪙 Reward: 1 Coin</p>
+                </div>
+                <button class="btn-task" onclick="openTask('${taskId}')">Start Task 🎬</button>
+              </div>
+            `;
+          }
+        });
+
+        if (visibleCount === 0) {
+          container.innerHTML = "<div style='color: var(--text-muted); text-align: center; padding: 10px;'>🎉 All tasks completed for today!</div>";
+        }
+      });
+    }
+
+    window.openTask = function(taskId) {
+      if (window.isAdBlockActive) {
+        showAlert("⚠️ Please disable AdBlocker to start task!");
+        document.getElementById("adblock-overlay").style.display = "flex";
+        return;
+      }
+
+      if (currentUserObj && !currentUserObj.emailVerified) {
+        showAlert("⚠️ Please verify your account first!");
+        return;
+      }
+
+      window.location.href = `task.html?taskId=${taskId}&userId=${currentUserId}`;
+    };
+
+    window.copyReferralLink = function() {
+      const copyText = document.getElementById("refLinkInput");
+      copyText.select();
+      navigator.clipboard.writeText(copyText.value);
+      showAlert("Referral link copied!");
+    };
+
+    window.handleLogout = function() {
+      signOut(auth).then(() => {
+        window.location.href = "index.html";
+      });
+    };
+  </script>
+</body>
+</html>
